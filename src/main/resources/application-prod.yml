@@ -1,0 +1,31 @@
+# Perfil de producción -- activar con SPRING_PROFILES_ACTIVE=prod.
+# Solo pisa lo que application.yml deja con un default inseguro o
+# demasiado verboso para un entorno compartido; todo lo demás (datasource,
+# Flyway, multipart, etc.) se hereda tal cual.
+
+jventas:
+  security:
+    jwt:
+      # Sin default a propósito -- en local, JwtService genera una clave
+      # aleatoria si esto viene vacío (útil para no configurar nada). En
+      # prod eso firmaría tokens con una clave distinta en cada reinicio,
+      # invalidando todas las sesiones activas sin aviso. Mejor que el
+      # arranque falle ya mismo si falta la variable de entorno.
+      secret: ${JWT_SECRET}
+  cors:
+    # Sin default -- en local cae a localhost:5173/3000 (application.yml),
+    # que no debe colar por accidente en un entorno real.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # "info" no aporta en prod y agranda la superficie expuesta sin
+        # necesidad -- solo health, que es lo que usa cualquier orquestador.
+        include: health
+
+logging:
+  level:
+    com.jventas.backend: INFO
+    org.hibernate.SQL: WARN

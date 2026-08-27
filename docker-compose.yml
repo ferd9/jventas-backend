@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: jventas
+      POSTGRES_USER: jventas
+      POSTGRES_PASSWORD: jventas
+    ports:
+      - "5433:5432"   # 5432 suele estar ocupado por otros proyectos locales
+    volumes:
+      - jventas_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jventas"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  jventas_db_data:
