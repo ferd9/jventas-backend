@@ -45,7 +45,7 @@
         </dependency>
         <!-- Conector oficial de Google para hablar con Cloud SQL vía socket Unix
              (o TLS directo) sin exponer la instancia con IP pública. El driver
-             Postgres estándar no sabe hacer esto solo -- este dependency agrega
+             Postgres estándar no sabe hacer esto solo: este dependency agrega
              el "socketFactory" que se referencia desde SPRING_DATASOURCE_URL
              al desplegar en Cloud Run. No aplica en local (docker-compose usa
              TCP normal), así que no cambia nada del flujo de desarrollo. -->
