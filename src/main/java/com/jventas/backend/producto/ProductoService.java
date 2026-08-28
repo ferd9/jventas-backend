@@ -7,6 +7,7 @@ import com.jventas.backend.catalogo.ListaPrecioRepository;
 import com.jventas.backend.catalogo.MarcaRepository;
 import com.jventas.backend.catalogo.ModeloRepository;
 import com.jventas.backend.catalogo.UnidadMedidaRepository;
+import com.jventas.backend.inventario.AlmacenStockRepository;
 import com.jventas.backend.moneda.MonedaRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,6 +31,7 @@ public class ProductoService {
     private final UnidadMedidaRepository unidadMedidaRepository;
     private final ImpuestoRepository impuestoRepository;
     private final ListaPrecioRepository listaPrecioRepository;
+    private final AlmacenStockRepository almacenStockRepository;
 
     @Transactional(readOnly = true)
     public Page<ProductoResumenResponse> listar(String q, Pageable pageable) {
@@ -37,6 +39,36 @@ public class ProductoService {
                 ? productoRepository.buscarPorNombre(q, pageable)
                 : productoRepository.findByActivoTrue(pageable);
         return pagina.map(ProductoResumenResponse::from);
+    }
+
+    /**
+     * Catálogo público (sin autenticación, ver PublicoProductoController) --
+     * misma búsqueda que el listado administrativo, pero mapeado a una forma
+     * sin campos internos (costo, ubicación, stock exacto).
+     */
+    @Transactional(readOnly = true)
+    public Page<ProductoPublicoResponse> listarPublico(String q, Pageable pageable) {
+        Page<Producto> pagina = StringUtils.hasText(q)
+                ? productoRepository.buscarPorNombre(q, pageable)
+                : productoRepository.findByActivoTrue(pageable);
+        return pagina.map(this::aRespuestaPublica);
+    }
+
+    private ProductoPublicoResponse aRespuestaPublica(Producto producto) {
+        List<PrecioResponse> precios = productoPrecioRepository.findByProductoId(producto.getId()).stream()
+                .map(PrecioResponse::from)
+                .toList();
+        boolean disponible = almacenStockRepository.sumarStockActivoDeProducto(producto.getId()) > 0;
+        return new ProductoPublicoResponse(
+                producto.getId(),
+                producto.getCodigo(),
+                producto.getNombre(),
+                producto.getCategoria() != null ? producto.getCategoria().getNombre() : null,
+                producto.getMarca() != null ? producto.getMarca().getNombre() : null,
+                producto.getMoneda().getNombre(),
+                producto.getImagenUrl(),
+                disponible,
+                precios);
     }
 
     @Transactional(readOnly = true)

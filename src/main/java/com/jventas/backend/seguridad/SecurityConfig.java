@@ -83,6 +83,9 @@ public class SecurityConfig {
                         // solo servir (GET) es público -- subir (POST) exige autenticación, ver ArchivoController
                         .requestMatchers(HttpMethod.GET, "/api/archivos/**")
                         .permitAll()
+                        // catálogo público (vitrina de productos), solo lectura -- ver PublicoProductoController
+                        .requestMatchers(HttpMethod.GET, "/api/publico/**")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // después del filtro JWT a propósito -- necesita el usuario ya autenticado
