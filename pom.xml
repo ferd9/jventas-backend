@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.google.cloud.sql</groupId>
             <artifactId>postgres-socket-factory</artifactId>
-            <version>1.19.1</version>
+            <version>1.28.4</version>
         </dependency>
 
         <!-- Migraciones de esquema. Desde Spring Boot 4 la autoconfiguración de
