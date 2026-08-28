@@ -490,6 +490,8 @@ y `GET /api/proveedores` (ambos filtran `activo = true` por defecto).
 
 ## Producción
 
+Ver [`DEPLOYMENT.md`](./DEPLOYMENT.md) para el flujo completo de despliegue a Cloud Run/Cloud SQL y sus gotchas.
+
 `SPRING_PROFILES_ACTIVE=prod` (`application-prod.yml`) exige `JWT_SECRET`
 y `CORS_ALLOWED_ORIGINS` sin default — si falta cualquiera de las dos, la
 app falla al arrancar con un mensaje explícito en vez de arrancar "bien"
@@ -505,12 +507,14 @@ costeo por promedio ponderado, trazabilidad por número de serie, y
 devoluciones parciales (ver sus secciones arriba). No queda ninguna
 decisión de negocio abierta.
 
+El despliegue a GCP (Cloud Run + Cloud SQL + CI/CD) ya está resuelto — ver
+[`DEPLOYMENT.md`](./DEPLOYMENT.md). No hay `Dockerfile` porque no hace
+falta (Cloud Build usa Buildpacks a partir del `pom.xml` directo).
+
 Fuera de alcance por pedido explícito, no evaluado en este repo:
 
 - Documentación de API (Swagger/OpenAPI)
-- Infraestructura de despliegue: `Dockerfile` del backend (solo existe
-  `docker-compose.yml` para levantar Postgres en local), CI, estrategia de
-  backup/restore
+- Estrategia de backup/restore de la base de datos
 
 Con el núcleo transaccional (producto, compra, venta, traslado, pago,
 devoluciones), la numeración de comprobantes, la administración de
