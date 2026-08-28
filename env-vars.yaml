@@ -1,0 +1,5 @@
+SPRING_PROFILES_ACTIVE: prod
+DB_USER: jventas
+SPRING_DATASOURCE_URL: "jdbc:postgresql:///jventas?cloudSqlInstance=jventas-app:us-central1:jventas-db&socketFactory=com.google.cloud.sql.postgres.SocketFactory"
+CORS_ALLOWED_ORIGINS: "https://jventas-app.web.app,https://jventas-app.firebaseapp.com"
+STORAGE_UPLOAD_DIR: /uploads

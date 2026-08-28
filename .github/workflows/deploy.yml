@@ -1,0 +1,37 @@
+name: Deploy backend to Cloud Run
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: jventas-app
+          workload_identity_provider: projects/327145777303/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
+          service_account: github-actions-deployer@jventas-app.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy jventas-backend \
+            --source=. \
+            --region=us-central1 \
+            --allow-unauthenticated \
+            --execution-environment=gen2 \
+            --port=8081 \
+            --env-vars-file=env-vars.yaml \
+            --set-secrets=JWT_SECRET=jwt-secret:latest,DB_PASSWORD=db-password:latest \
+            --set-build-env-vars=GOOGLE_RUNTIME_VERSION=21 \
+            --add-volume mount-path=/uploads,type=cloud-storage,bucket=jventas-app-uploads
